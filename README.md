@@ -1,5 +1,7 @@
 # Papa Rent
 
+[![ci](https://github.com/goodbridge-rafa/papa-rent-project/actions/workflows/ci.yml/badge.svg)](https://github.com/goodbridge-rafa/papa-rent-project/actions/workflows/ci.yml)
+
 **Alert-first search for regulated rental housing in the Netherlands.** Social and mid-rent homes
 (*sociale huur*, *middenhuur*) are published across dozens of housing-association and landlord
 portals, each with its own rules, and the good ones are gone in hours. Papa Rent collects them into
