@@ -1,0 +1,40 @@
+# Build context of the single image (infra/Dockerfile, context = repository root).
+# What does not get in here does not get into the image nor travel to the daemon.
+
+# Dependencies and artefacts: the image runs `pnpm install` from scratch
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+coverage/
+**/coverage/
+**/*.tsbuildinfo
+
+# Local data and history
+.git/
+.github/
+.data/
+.expo/
+**/.expo/
+*.log
+.DS_Store
+
+# Secrets: the real .env never enters the image (compose injects it via env_file)
+.env
+.env.*
+!.env.example
+
+# Mobile app: does not run on the server (the image only serves @papa/api and @papa/engine)
+apps/mobile/
+
+# Docs: only the registry is read at runtime (the Dockerfile copies it explicitly)
+docs/
+!docs/sources/registry.yaml
+
+# Infra: the Dockerfile does not copy itself
+infra/
+
+# Session tooling
+.claude/

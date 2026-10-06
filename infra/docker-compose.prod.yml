@@ -1,0 +1,92 @@
+# Production on a single VPS (Hetzner): Postgres + api + engine + Caddy (automatic TLS).
+# Usage: docker compose -f infra/docker-compose.prod.yml --env-file /opt/papa/.env up -d --build
+
+# Fixed project name: without it compose would inherit the folder name ("infra"), which
+# collides with any other project kept in a folder with that name.
+name: papa
+
+# Logs: the engine polls continuously, so every service rotates json-file
+# with a cap (10 MB × 5 = 50 MB per service) instead of growing until the disk fills up.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      POSTGRES_USER: papa
+      # Required: without it compose aborts here instead of starting a Postgres without a password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in /opt/papa/.env (see .env.example)}
+      POSTGRES_DB: papa
+    volumes: ["/opt/papa/pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U papa -d papa"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+  migrate:
+    build: { context: .., dockerfile: infra/Dockerfile }
+    # One-shot: runs the migrations and exits. api and engine wait for exit code 0.
+    restart: "no"
+    logging: *logging
+    command: ["pnpm", "--filter", "@papa/db", "migrate"]
+    environment: { DATABASE_URL: "postgres://papa:${POSTGRES_PASSWORD}@db:5432/papa" }
+    depends_on: { db: { condition: service_healthy } }
+  api:
+    build: { context: .., dockerfile: infra/Dockerfile }
+    restart: unless-stopped
+    logging: *logging
+    command: ["pnpm", "--filter", "@papa/api", "start"]
+    env_file: ["/opt/papa/.env"]
+    environment: { DATABASE_URL: "postgres://papa:${POSTGRES_PASSWORD}@db:5432/papa", PORT: "3000" }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    # /health touches the database and returns 503 when it is down (see apps/api/src/app.ts).
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+  engine:
+    build: { context: .., dockerfile: infra/Dockerfile }
+    restart: unless-stopped
+    logging: *logging
+    command: ["pnpm", "--filter", "@papa/engine", "start"]
+    env_file: ["/opt/papa/.env"]
+    environment: { DATABASE_URL: "postgres://papa:${POSTGRES_PASSWORD}@db:5432/papa" }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    # No healthcheck: the engine exposes nothing. Real health = freshness of the last poll,
+    # visible in `pnpm engine report:health`, `report:latency` and /v1/sources (lastOkAt).
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    logging: *logging
+    ports: ["80:80", "443:443"]
+    # Certificate domain: changing API_DOMAIN in /opt/papa/.env is enough, no Caddyfile edit.
+    environment: { API_DOMAIN: "${API_DOMAIN:-api.example.com}" }
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/papa/caddy_data:/data
+      - /opt/papa/caddy_config:/config
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

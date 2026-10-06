@@ -1,0 +1,10 @@
+# Reviewed false positives: synthetic listing URL keys, an invented test password and rule identifiers.
+apps/api/test/auth.test.ts:generic-api-key:73
+apps/api/test/auth.test.ts:generic-api-key:79
+apps/api/test/auth.test.ts:generic-api-key:98
+apps/api/test/auth.test.ts:generic-api-key:104
+packages/adapters/fixtures/zig365/example-portal.json:generic-api-key:14
+packages/adapters/fixtures/zig365/example-portal.json:generic-api-key:54
+packages/adapters/fixtures/zig365/example-portal.json:generic-api-key:91
+packages/core/src/market-rules.ts:generic-api-key:116
+packages/core/src/market-rules.ts:generic-api-key:127

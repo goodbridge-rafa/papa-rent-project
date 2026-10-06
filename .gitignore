@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.expo/
+apps/mobile/ios/
+apps/mobile/android/
+**/*.tsbuildinfo
+/tmp/
+.data/
+
+# Reviewer probes. Convention: a test whose name starts with `z` or `repro-` is
+# disposable — it exists to reproduce a defect during a review and dies with it.
+# A real test is never named like that.
+**/test/z*.test.ts
+**/test/*repro*.test.ts
+**/test/*scratch*.test.ts
+**/test/*tmp*.test.ts
+**/test/__*
+

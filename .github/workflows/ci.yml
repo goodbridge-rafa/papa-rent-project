@@ -1,0 +1,91 @@
+name: ci
+on:
+  push:
+    branches: ["**"]
+    # Documentation-only commits do not change what lint, types, tests or the compose
+    # checks verify, so they skip CI. Every code push still runs the whole pipeline.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.claude/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.claude/**'
+
+# A new push on the same branch cancels the previous run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.33.0 }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm engine registry:check
+
+      # Infra checks live in the same job; `if: !cancelled()` keeps them running after an
+      # earlier failure, so a lint error does not hide an infra problem in the same run.
+      # Infra fails in production, not in tests: here we validate what is cheap to validate.
+      - name: .env.example covers everything the code and compose read
+        if: ${{ !cancelled() }}
+        run: bash infra/check-env-example.sh
+
+      - name: infra script regression tests
+        if: ${{ !cancelled() }}
+        run: bash infra/test-infra-scripts.sh
+
+      - name: syntax and static analysis of the infra scripts
+        if: ${{ !cancelled() }}
+        run: |
+          command -v shellcheck >/dev/null || sudo apt-get install -y -qq shellcheck
+          for f in infra/*.sh; do bash -n "$f"; done
+          shellcheck infra/*.sh
+
+      - name: infra and workflow YAML
+        if: ${{ !cancelled() }}
+        run: |
+          python3 -c "import yaml" 2>/dev/null || pip install --quiet pyyaml
+          python3 - <<'PY'
+          import glob
+          import yaml
+          files = sorted(
+              glob.glob("infra/*.yml") + glob.glob("infra/*.yaml") + glob.glob(".github/workflows/*.yml")
+          )
+          assert files, "no YAML found"
+          for path in files:
+              with open(path, encoding="utf-8") as fh:
+                  yaml.safe_load(fh)
+              print("ok", path)
+          PY
+
+      - name: development and production compose files are valid
+        if: ${{ !cancelled() }}
+        run: |
+          sudo mkdir -p /opt/papa
+          sudo touch /opt/papa/.env
+          docker compose -f infra/docker-compose.yml config -q
+          POSTGRES_PASSWORD=ci-placeholder docker compose -f infra/docker-compose.prod.yml config -q
+
+      - name: production refuses to start without POSTGRES_PASSWORD
+        if: ${{ !cancelled() }}
+        run: |
+          if docker compose -f infra/docker-compose.prod.yml config -q 2>/dev/null; then
+            echo "the production compose accepted an empty POSTGRES_PASSWORD" >&2
+            exit 1
+          fi
+          echo "ok: aborts without POSTGRES_PASSWORD"

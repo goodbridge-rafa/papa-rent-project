@@ -1,0 +1,161 @@
+version: 1
+updated_at: '2026-10-06'
+sources:
+  - slug: example-portal
+    name: Example Portal
+    kind: consortium
+    stack: zig365
+    tier: A
+    status: live
+    urls:
+      home: https://portal-a.example.nl/
+      listings: https://portal-a.example.nl/aanbod/nu-te-huur/te-huur
+      data: https://portal-a.example.nl/portal/object/frontend/getallobjects/format/json
+      robots: https://portal-a.example.nl/robots.txt
+      terms: null
+    regions:
+      - Example region
+    provinces:
+      - Noord-Brabant
+    municipalities: []
+    segments:
+      - social
+      - midden
+    registration:
+      fee_eur: 0
+      renewal_eur_per_year: 0
+      required_to_react: true
+      confidence: C
+    allocation_models:
+      - inschrijfduur
+      - loting
+      - direct
+    interval_seconds: 60
+    adapter: zig365
+    research_ref: null
+    fingerprint:
+      checked_at: '2026-09-06'
+      http: 200
+      note: Zig365 JSON feed (getallobjects); fixture packages/adapters/fixtures/zig365/example-portal.json
+    legal: null
+    notes: null
+  - slug: example-portal-b
+    name: Example Portal B
+    kind: consortium
+    stack: zig365
+    tier: A
+    status: live
+    urls:
+      home: https://portal-b.example.nl/
+      listings: null
+      data: null
+      robots: https://portal-b.example.nl/robots.txt
+      terms: null
+    regions:
+      - Example region B
+    provinces:
+      - Friesland
+    municipalities: []
+    segments:
+      - social
+      - midden
+    registration:
+      fee_eur: null
+      renewal_eur_per_year: null
+      required_to_react: true
+      confidence: C
+    allocation_models:
+      - loting
+      - punten
+    interval_seconds: 60
+    adapter: zig365
+    research_ref: null
+    fingerprint:
+      checked_at: '2026-09-06'
+      http: 200
+      note: Zig365 JSON feed at the default path derived from urls.home; fixture packages/adapters/fixtures/zig365/example-portal-b.json
+    legal: null
+    notes: null
+  - slug: heimstaden
+    name: Heimstaden Nederland
+    kind: manager
+    stack: bespoke
+    tier: A
+    status: live
+    urls:
+      home: https://heimstaden.com/
+      listings: https://heimstaden.com/nl/huurwoningen/
+      data: https://heimstaden.com/nl/wp-admin/admin-ajax.php?action=hose_search&query_string=object_type%3Dapartments%26sort%3Dadded-desc&hose_data_detail_level=level_2
+      robots: https://heimstaden.com/robots.txt
+      terms: null
+    regions: []
+    provinces: []
+    municipalities: []
+    segments:
+      - social
+      - midden
+      - free
+    registration:
+      fee_eur: null
+      renewal_eur_per_year: null
+      required_to_react: false
+      confidence: null
+    allocation_models:
+      - direct
+    interval_seconds: 90
+    adapter: heimstaden
+    research_ref: null
+    fingerprint:
+      checked_at: '2026-09-06'
+      http: 200
+      note: >-
+        WordPress multisite, NL section under /nl/. JSON via GET admin-ajax.php?action=hose_search
+        with hose_data_detail_level=level_2 (no cookie or nonce). Fallback: the same feed inline in
+        the listings HTML as window.hose_objects_data. No ETag/Last-Modified. Apply = permalink +
+        #inquiry_form.
+    legal: null
+    notes: null
+  - slug: eigen-haard
+    name: Eigen Haard
+    kind: corporation
+    stack: bespoke
+    tier: A
+    status: live
+    urls:
+      home: https://www.eigenhaard.nl/te-huur/
+      listings: https://www.eigenhaard.nl/te-huur/middenhuur-en-vrije-sector/zoek/
+      data: https://www.eigenhaard.nl/te-huur/middenhuur-en-vrije-sector/zoek/?view=Map
+      robots: https://www.eigenhaard.nl/robots.txt
+      terms: null
+    regions: []
+    provinces:
+      - Noord-Holland
+    municipalities:
+      - Amsterdam
+      - Amstelveen
+      - Aalsmeer
+      - Ouder-Amstel
+      - Zaanstad
+    segments:
+      - midden
+      - free
+    registration:
+      fee_eur: null
+      renewal_eur_per_year: null
+      required_to_react: true
+      confidence: A
+    allocation_models: []
+    interval_seconds: 90
+    adapter: eigen-haard
+    research_ref: null
+    fingerprint:
+      checked_at: '2026-09-10'
+      http: 200
+      note: >-
+        Server-rendered HTML. The map view (?view=Map) carries the whole offer in
+        input.objectsJson (id, title, link, gps, price, extrainfo, status, type_object) plus a
+        "<h3>N resultaten</h3>" counter; the list view pages 12 at a time without coordinates.
+        No ETag/Last-Modified. The detail page links to the application portal
+        (<region>.mijndak.nl/HuisDetails?PublicatieId=<id>, same id as the listing path).
+    legal: null
+    notes: null

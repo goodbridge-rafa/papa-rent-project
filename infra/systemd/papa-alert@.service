@@ -1,0 +1,9 @@
+# Generic failure alert: any unit with `OnFailure=papa-alert@%n.service`
+# lands here with the failed unit's name as the instance.
+[Unit]
+Description=PAPA RENT · failure alert for unit %i
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/opt/papa/.env
+ExecStart=/opt/papa/app/infra/alert.sh %i

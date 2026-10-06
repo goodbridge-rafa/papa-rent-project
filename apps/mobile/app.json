@@ -1,0 +1,170 @@
+{
+  "expo": {
+    "name": "PAPA RENT",
+    "slug": "papa-rent",
+    "owner": "REPLACE_ME-expo-account",
+    "version": "0.1.0",
+    "description": "Alle sociale huur en middenhuur van Nederland in één app — melding binnen seconden na publicatie.",
+    "platforms": ["ios", "android", "web"],
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "paparent",
+    "userInterfaceStyle": "automatic",
+    "primaryColor": "#FF6B1A",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_ME-eas-project-id",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "ios": {
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.example.paparent",
+      "supportsTablet": false,
+      "associatedDomains": ["applinks:example.com", "applinks:app.example.com"],
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Vergrendel PAPA RENT met Face ID, zodat alleen jij je radars en meldingen ziet.",
+        "NSLocationWhenInUseUsageDescription": "PAPA RENT gebruikt je locatie alleen als je in de radar-assistent op “Bij mij in de buurt” tikt, om het middelpunt van je zoekgebied te bepalen. We bewaren alleen dat ene punt — afgerond op ongeveer 100 meter — als middelpunt van je Radar, en volgen je nooit op de achtergrond."
+      }
+    },
+    "android": {
+      "package": "com.example.paparent",
+      "adaptiveIcon": {
+        "backgroundColor": "#0A1B33",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "allowBackup": false,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ],
+      "blockedPermissions": [
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "example.com",
+              "pathPrefix": "/l/"
+            },
+            {
+              "scheme": "https",
+              "host": "example.com",
+              "pathPrefix": "/r/"
+            },
+            {
+              "scheme": "https",
+              "host": "example.com",
+              "path": "/inbox"
+            },
+            {
+              "scheme": "https",
+              "host": "app.example.com",
+              "pathPrefix": "/l/"
+            },
+            {
+              "scheme": "https",
+              "host": "app.example.com",
+              "pathPrefix": "/r/"
+            },
+            {
+              "scheme": "https",
+              "host": "app.example.com",
+              "path": "/inbox"
+            }
+          ]
+        }
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png",
+      "name": "PAPA RENT",
+      "shortName": "PAPA RENT",
+      "lang": "nl",
+      "display": "standalone",
+      "themeColor": "#0A1B33",
+      "backgroundColor": "#FBF7F1",
+      "description": "Alle sociale huur en middenhuur van Nederland in één app."
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0A1B33",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 96
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FF6B1A",
+          "defaultChannel": "new"
+        }
+      ],
+      "expo-secure-store",
+      "expo-localization",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Vergrendel PAPA RENT met Face ID."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "locationWhenInUsePermission": "PAPA RENT gebruikt je locatie alleen als je in de radar-assistent op “Bij mij in de buurt” tikt, om het middelpunt van je zoekgebied te bepalen. We bewaren alleen dat ene punt — afgerond op ongeveer 100 meter — als middelpunt van je Radar, en volgen je nooit op de achtergrond.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false,
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_ME-eas-project-id"
+      },
+      "setup": {
+        "readme": "JSON has no comments, so the open setup steps live here. Every value starting with REPLACE_ME is a placeholder, and the example.com domains and com.example.paparent identifiers must be replaced with your own. The app treats a REPLACE_ME projectId as 'not configured' (src/lib/config.ts) and therefore registers no push token.",
+        "owner": "Expo account name (organisation or user) that owns the EAS project. See expo.dev → Account settings.",
+        "extra.eas.projectId": "Set by `eas init` in apps/mobile. Then put the same UUID in expo.updates.url (https://u.expo.dev/<projectId>).",
+        "androidAppLinks": "autoVerify only works once https://example.com/.well-known/assetlinks.json and the same file on app.example.com contain the SHA-256 of the Play signing key (`eas credentials` shows it).",
+        "iosUniversalLinks": "associatedDomains only works once https://example.com/.well-known/apple-app-site-association (and app.example.com) contains appID <TeamID>.com.example.paparent.",
+        "permissions": "Only what the app really uses: internet + network state (API), POST_NOTIFICATIONS + VIBRATE + RECEIVE_BOOT_COMPLETED (housing alerts), USE_BIOMETRIC (app lock). USE_FINGERPRINT is added by expo-local-authentication for Android < 9 and therefore stays. Location (ACCESS_COARSE_LOCATION + NSLocationWhenInUseUsageDescription) is only requested when the user taps “Bij mij in de buurt” in the radar wizard: never at startup, never in the background. Coarse enough for a 5 km radius; we deliberately do not ask for fine GPS permission. The point read is rounded in the app to 3 decimals (~110 m) and then stored as the radar centre (radars.center_lat/center_lng). That is what the permission text says and what privacy statement §3 describes; say the same in the App Store privacy nutrition labels (Coarse Location, linked to the account, App Functionality only).",
+        "blockedPermissions": "Added by libraries but unused: ACCESS_WIFI_STATE (expo-network, not used), READ_EXTERNAL_STORAGE (Glide via expo-image, we read no local files), SYSTEM_ALERT_WINDOW (debug template).",
+        "allowBackup": "Off: the session token lives in SecureStore and does not belong in a Google Drive backup. The account lives on the server, so nothing is lost."
+      }
+    }
+  }
+}

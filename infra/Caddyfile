@@ -1,0 +1,10 @@
+# Automatic TLS via Let's Encrypt. The domain comes from the environment (API_DOMAIN in /opt/papa/.env),
+# so this file never needs editing on the server; the default is a placeholder.
+{$API_DOMAIN:api.example.com} {
+  encode zstd gzip
+  reverse_proxy api:3000
+  header {
+    Strict-Transport-Security "max-age=31536000"
+    X-Content-Type-Options nosniff
+  }
+}

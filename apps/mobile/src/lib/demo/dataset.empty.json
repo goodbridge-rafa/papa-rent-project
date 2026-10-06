@@ -1,0 +1,8 @@
+{
+  "snapshotAt": "",
+  "note": "Stub. The normal build never ships the demo snapshot: see metro.config.js.",
+  "sources": [],
+  "listingCount": 0,
+  "radarIds": [],
+  "routes": {}
+}

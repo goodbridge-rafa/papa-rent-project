@@ -1,0 +1,14 @@
+# Backup schedule. `systemctl list-timers papa-backup.timer` shows the next run.
+[Unit]
+Description=PAPA RENT · daily backup run at 03:00 UTC
+
+[Timer]
+Unit=papa-backup.service
+OnCalendar=*-*-* 03:00:00
+# Avoid hitting the same minute as the rest of the world.
+RandomizedDelaySec=300
+# VPS off/rebooted at the scheduled time: runs as soon as it can, does not skip the day.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

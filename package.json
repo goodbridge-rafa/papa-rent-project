@@ -1,0 +1,26 @@
+{
+  "name": "papa-rent",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "engine": "pnpm --filter @papa/engine run cli",
+    "api": "pnpm --filter @papa/api run dev",
+    "db:generate": "pnpm --filter @papa/db run generate",
+    "db:migrate": "pnpm --filter @papa/db run migrate"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/node": "^22.19.0",
+    "turbo": "^2.10.12",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

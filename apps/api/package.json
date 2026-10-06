@@ -1,0 +1,32 @@
+{
+  "name": "@papa/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --testTimeout=30000",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "auth:generate": "auth generate --config src/auth.config.ts --output ../../packages/db/src/auth-schema.ts --yes"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@papa/core": "workspace:*",
+    "@papa/db": "workspace:*",
+    "hono": "^4.13.7",
+    "pino": "^10.3.1",
+    "zod": "^4.5.4",
+    "drizzle-orm": "^0.45.2",
+    "better-auth": "^1.7.3",
+    "@better-auth/drizzle-adapter": "^1.7.3",
+    "@better-auth/expo": "^1.7.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.13",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.11",
+    "@electric-sql/pglite": "^0.5.8",
+    "auth": "^1.7.3"
+  }
+}

@@ -1,0 +1,40 @@
+#cloud-config
+# Hetzner CX32 (Ubuntu 24.04). Creates the user, installs Docker and rclone, prepares /opt/papa.
+# The deploy (infra/deploy.sh) takes care of the code, migrations and the backup timer.
+package_update: true
+package_upgrade: true
+# rclone: without it the backup never leaves the VPS (infra/backup.sh fails loudly if BACKUP_REMOTE is set).
+packages: [ca-certificates, curl, git, ufw, fail2ban, unattended-upgrades, rclone]
+users:
+  - name: papa
+    # `docker` is left out: the group only exists after runcmd and a non-existent group
+    # makes user creation fail (we would be locked out of the machine).
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - "SSH_PUBLIC_KEY_PLACEHOLDER"
+write_files:
+  # On Ubuntu 24.04 sshd reads the drop-ins before the main file; editing
+  # sshd_config with sed guarantees nothing because cloud-init writes its own drop-in.
+  - path: /etc/ssh/sshd_config.d/99-papa.conf
+    permissions: "0644"
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin prohibit-password
+runcmd:
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker papa
+  - mkdir -p /opt/papa/pgdata /opt/papa/backups /opt/papa/caddy_data /opt/papa/caddy_config
+  - chown -R papa:papa /opt/papa
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow OpenSSH
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl restart ssh
+# After this, in order: copy .env.example → /opt/papa/.env and fill it in (POSTGRES_PASSWORD
+# is required), then run infra/deploy.sh papa@IP from a workstation.
+# The deploy installs and enables papa-backup.timer; confirm with `systemctl list-timers papa-backup.timer`.

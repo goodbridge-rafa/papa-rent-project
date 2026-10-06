@@ -1,0 +1,21 @@
+# Daily Postgres dump + offsite copy. Installed by infra/deploy.sh into
+# /etc/systemd/system/. Triggered by papa-backup.timer; manual run:
+#   sudo systemctl start papa-backup.service && journalctl -u papa-backup -n 50
+[Unit]
+Description=PAPA RENT · Postgres backup (local dump + offsite)
+Documentation=file:/opt/papa/app/infra/backup.sh
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+# Visible failure: the alert goes out by email (infra/alert.sh) and stays in the journal.
+OnFailure=papa-alert@%n.service
+
+[Service]
+Type=oneshot
+# The "-" tolerates a missing file; the script itself fails with a clear message.
+EnvironmentFile=-/opt/papa/.env
+ExecStart=/opt/papa/app/infra/backup.sh
+TimeoutStartSec=3600
+# The backup does not compete with polling: detection speed is the product.
+Nice=10
+IOSchedulingClass=idle
